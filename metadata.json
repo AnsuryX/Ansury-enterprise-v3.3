@@ -1,0 +1,6 @@
+{
+  "name": "Ansury",
+  "description": "Enterprise Omnichannel Customer Engagement & Automation Platform with Meta WhatsApp Coexistence Integration",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
