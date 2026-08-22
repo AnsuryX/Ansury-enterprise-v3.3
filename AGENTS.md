@@ -44,10 +44,46 @@ Ansury is a full-stack React + Express application running on Cloud Run containe
 
 ## 🛠️ Developer Rules & Best Practices
 
-1. **Server API Key Security**: Always proxy external API requests through `server.ts`. Never expose `GEMINI_API_KEY` or third-party client secrets to the browser bundle.
-2. **Port & Host Constraints**: Always bind Express to host `0.0.0.0` and port `3000`. Do not override the port.
-3. **Build Script Verification**: Production build relies on `vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs`.
-4. **No Mock Fallbacks in Live UI**: Ensure every interactive UI control triggers actual backend API endpoints and updates React state dynamically.
+1. **Strict Zero-Mock / Zero-Simulation Policy**:
+   - **Never use hardcoded user credentials or mock fallback accounts** in client-side forms or production UI.
+   - All authentication flows must route through `/api/auth/login` and `/api/auth/register` and persist to dynamic database state.
+   - Interactive UI controls (e.g. creating tenants, adding contacts, scheduling calendar events, executing flows) must trigger genuine backend endpoints and update the persistent datastore.
+2. **Enterprise Multi-Tenancy & RBAC Security**:
+   - Every workspace is partitioned by a unique `tenantId` with strict data isolation.
+   - Passwords must be hashed using cryptographic HMAC-SHA256 with tenant-scoped salts.
+   - Session tokens are validated on every request via `/api/auth/me` with Bearer headers.
+   - Enforce fine-grained RBAC roles: `Super Admin`, `Admin & System Owner`, `Omnichannel Support Lead`, and `AI Operations Specialist`.
+3. **WhatsApp Entity Identification & Coexistence Protocol**:
+   - **Business Portfolio ID** (e.g. `648719564147989` - SOLAR GEAR Limited): Represents the top-level Meta Business Manager portfolio, owner settings, and billing.
+   - **WhatsApp Business Account (WABA) ID** (e.g. `1495781001950663` - Solar Gear): Represents the WhatsApp account asset used for all Graph API messaging calls, templates, phone number assignment, and webhooks.
+   - **Meta App ID** (e.g. `946589648227889`): Must have `whatsapp_business_management` and `whatsapp_business_messaging` permissions.
+   - **Avoid Error #1690130 ("Invalid Business ID")**: Never swap the Business Portfolio ID into the WABA ID field in SDK configuration. WABA ID belongs in WhatsApp account fields; Portfolio ID belongs strictly in the owner/portfolio field.
+   - **Dual Coexistence Strategy**: Cloud API coexistence enables simultaneous operation of the physical WhatsApp Business Mobile App on iOS/Android devices alongside the Ansury Omnichannel Inbox via Port 3000 Webhook Ingress and WAMID deduplication.
+   - **WABA Status Handling**: Note that a "Review Not Started" status on a WABA can temporarily hide it from certain partner onboarding dropdowns; manual WABA ID mapping bypasses this block cleanly.
+4. **Full Database Persistence & Sync**:
+   - The platform datastore captures all entities: `tenants`, `users`, `sessions`, `contacts`, `conversations`, `messages`, `integrations`, `products`, `broadcasts`, `visualFlows`, `calendarEvents`, and `auditLogs`.
+   - Dual-tier persistence: Server writes state changes immediately to disk (`data/platform-state.json`) and synchronizes with cloud database (Supabase `ansury_store` & relational tables).
+5. **Server API Key Security**:
+   - Always proxy external API requests through `server.ts`. Never expose `GEMINI_API_KEY`, Supabase Service Keys, or CRM tokens to the client bundle.
+6. **Port & Container Constraints**:
+   - Always bind Express to host `0.0.0.0` and port `3000`. Do not override the port.
+
+---
+
+## 📚 Key Lessons Learned from Building Ansury
+
+1. **Meta Graph API Entity Hierarchy & ID Disambiguation**:
+   - Swapping the Meta Business Portfolio ID (e.g. `648719564147989`) and the WABA ID (e.g. `1495781001950663`) is the #1 root cause of Meta Error `#1690130` during Embedded Signup. Explicitly separating top-level Portfolio ownership from messaging WABA assets prevents initialization failures.
+2. **True Full-Stack Decoupling**:
+   - Keeping sensitive secrets (Gemini AI, Meta Graph API, Supabase Service Role, Google Workspace OAuth) strictly inside `server.ts` guarantees zero client-side credential exposure and eliminates CORS issues.
+3. **Resilient Multi-Tenant Schema Partitioning**:
+   - Partitioning all data documents with `tenantId` enables instant multi-tenancy without requiring separate database instances per tenant while preserving total isolation.
+4. **Omnichannel Coexistence Sync & WAMID Deduplication**:
+   - When synchronizing messages between Meta WhatsApp Cloud API and WhatsApp Business Mobile apps, strict WAMID (WhatsApp Message ID) tracking is essential to prevent infinite message echo loops.
+5. **Non-Destructive State Hydration**:
+   - When hydrating application state upon server startup, never let initial placeholder data overwrite live user accounts, custom integrations, or newly created contacts.
+6. **Session Token Validation on App Boot**:
+   - Client applications should immediately check `/api/auth/me` on startup with Bearer authentication to gracefully restore active sessions or transition cleanly to the login screen if the token has expired.
 
 ---
 

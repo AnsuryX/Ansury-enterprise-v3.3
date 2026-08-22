@@ -19,6 +19,7 @@ import { LoginScreen } from './components/LoginScreen';
 import { SuperAdminPanelModule } from './components/SuperAdminPanelModule';
 import { CalendarModule } from './components/CalendarModule';
 import { AiPlaygroundModule } from './components/AiPlaygroundModule';
+import { DatabaseHubModule } from './components/DatabaseHubModule';
 
 import {
   Conversation,
@@ -90,6 +91,35 @@ export default function App() {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [broadcasts, setBroadcasts] = useState<BroadcastCampaign[]>(initialBroadcasts);
   const [flows, setFlows] = useState<VisualFlow[]>(initialVisualFlows);
+
+  // Validate authentication session on mount
+  useEffect(() => {
+    const token = localStorage.getItem('ansury_auth_token');
+    if (token) {
+      fetch('/api/auth/me', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.success && data.user) {
+            setUserProfile(data.user);
+            setIsAuthenticated(true);
+            setIsLoggedOut(false);
+          } else {
+            // Invalid or expired token
+            localStorage.removeItem('ansury_auth_token');
+            setIsAuthenticated(false);
+          }
+        })
+        .catch(() => {
+          // If server fails or offline, leave cached state
+        });
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, []);
 
   // Load backend state on mount
   useEffect(() => {
@@ -778,6 +808,20 @@ export default function App() {
               onAddIntegration={handleAddIntegration}
               onUpdateIntegration={handleUpdateIntegration}
               onDeleteIntegration={handleDeleteIntegration}
+            />
+          </div>
+        )}
+
+        {activeTab === 'database' && (
+          <div className="flex-1 w-full h-full overflow-y-auto min-h-0 p-6">
+            <DatabaseHubModule
+              contacts={contacts}
+              onRefreshData={() => {
+                fetch('/api/contacts')
+                  .then((r) => r.json())
+                  .then((d) => d.success && setContacts(d.contacts))
+                  .catch(() => {});
+              }}
             />
           </div>
         )}

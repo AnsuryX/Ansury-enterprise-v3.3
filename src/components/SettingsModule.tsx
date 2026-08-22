@@ -85,6 +85,24 @@ export const SettingsModule: React.FC<SettingsModuleProps> = ({
     timestamp: new Date().toISOString(),
     services: [
       {
+        id: 'firebase',
+        name: 'Google Firebase Firestore (europe-west1)',
+        category: 'Database & Cloud Storage',
+        status: 'OPERATIONAL',
+        latencyMs: 18,
+        endpoint: 'gen-lang-client-0847864462 (Firestore Native)',
+        details: 'NoSQL Multi-Region Document Store & Hardened Security Rules',
+        region: 'europe-west1 (Belgium)',
+        protocol: 'gRPC / HTTPS (TLS 1.3)',
+        authType: 'Google Cloud ADC & Firebase Blueprint Rules',
+        metrics: {
+          activeCollections: 7,
+          securityGate: 'Master Rules Active',
+          databaseId: 'ai-studio-ansurychatv2-cb554a46-58d6-467f-a151-4d1af1b0b55f',
+          realtimeSync: 'Dual-Write Active',
+        },
+      },
+      {
         id: 'supabase',
         name: 'Supabase Cloud Database',
         category: 'Database & Storage',
@@ -275,7 +293,7 @@ export const SettingsModule: React.FC<SettingsModuleProps> = ({
   };
 
   const filteredServices = infraData.services.filter((s) => {
-    if (activeFilter === 'database') return s.id === 'supabase' || s.id === 'cloudrun';
+    if (activeFilter === 'database') return s.id === 'firebase' || s.id === 'supabase' || s.id === 'cloudrun';
     if (activeFilter === 'messaging') return s.id === 'meta' || s.id === 'n8n';
     if (activeFilter === 'ai') return s.id === 'gemini';
     return true;

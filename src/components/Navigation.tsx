@@ -26,6 +26,7 @@ import {
   Lock,
   Calendar,
   Terminal,
+  Database,
 } from 'lucide-react';
 import { EnterpriseBrandConfig, UserProfile } from '../types';
 
@@ -36,6 +37,7 @@ export type ActiveTab =
   | 'ai_playground'
   | 'whatsapp_coexistence'
   | 'integrations'
+  | 'database'
   | 'meta_commerce'
   | 'broadcasts'
   | 'flow_builder'
@@ -154,6 +156,14 @@ export const Navigation: React.FC<NavigationProps> = ({
       label: 'App Integrations Hub',
       icon: Boxes,
       highlight: false,
+      allowedRoles: ['Admin', 'Manager'] as UserRoleCategory[],
+    },
+    {
+      id: 'database' as ActiveTab,
+      label: 'Database & Cloud Storage',
+      icon: Database,
+      highlight: true,
+      badge: 'FIREBASE',
       allowedRoles: ['Admin', 'Manager'] as UserRoleCategory[],
     },
     {

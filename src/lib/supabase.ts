@@ -335,7 +335,44 @@ export async function syncFetchOAuthTokens(): Promise<any | null> {
   }
 }
 
-// 5. Full Enterprise State Backup / Mirror
+// 5. Multi-Tenant & User Security DB Sync
+export async function syncSaveTenant(tenant: any): Promise<boolean> {
+  const sb = getSupabaseAdminClient();
+  if (!sb) return false;
+  try {
+    const { error } = await sb.from('ansury_store').upsert(
+      {
+        key: `tenant_${tenant.id}`,
+        data: tenant,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'key' }
+    );
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+export async function syncSaveUser(user: any): Promise<boolean> {
+  const sb = getSupabaseAdminClient();
+  if (!sb) return false;
+  try {
+    const { error } = await sb.from('ansury_store').upsert(
+      {
+        key: `user_${user.id}`,
+        data: user,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'key' }
+    );
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+// 6. Full Enterprise State Backup / Mirror
 export async function syncSaveFullState(state: any): Promise<boolean> {
   const sb = getSupabaseAdminClient();
   if (!sb) return false;

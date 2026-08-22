@@ -24,6 +24,7 @@ import {
   Bot,
   Zap,
   Check,
+  Trash2,
 } from 'lucide-react';
 import { CalendarEvent, BookingSlot } from '../types';
 
@@ -80,16 +81,17 @@ export const CalendarModule: React.FC<CalendarModuleProps> = ({ onScheduleSucces
     }
   };
 
-  const handleSeedEvents = async () => {
+  const handleClearAllEvents = async () => {
+    if (!window.confirm('Are you sure you want to clear all appointments from your calendar view?')) return;
     try {
       setLoading(true);
-      const res = await fetch('/api/calendar/seed-events', { method: 'POST' });
+      const res = await fetch('/api/calendar/clear-events', { method: 'POST' });
       const data = await res.json();
-      if (data.success && data.events) {
-        setEvents(data.events);
+      if (data.success) {
+        setEvents([]);
       }
     } catch (err) {
-      console.error('Failed to seed events:', err);
+      console.error('Failed to clear events:', err);
     } finally {
       setLoading(false);
     }
@@ -288,6 +290,18 @@ export const CalendarModule: React.FC<CalendarModuleProps> = ({ onScheduleSucces
             <span>Sync Google</span>
           </button>
 
+          {events.length > 0 && (
+            <button
+              onClick={handleClearAllEvents}
+              disabled={loading}
+              className="px-3 py-2 rounded-xl bg-slate-900 border border-rose-900/40 hover:bg-rose-950/40 text-rose-300 transition-all flex items-center gap-1.5 text-xs font-semibold"
+              title="Clear all appointments from current list"
+            >
+              <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+              <span>Clear All</span>
+            </button>
+          )}
+
           <button
             onClick={() => {
               resetForm();
@@ -298,7 +312,6 @@ export const CalendarModule: React.FC<CalendarModuleProps> = ({ onScheduleSucces
             <Plus className="w-4 h-4" />
             Schedule Meeting
           </button>
-
         </div>
       </div>
 
@@ -425,11 +438,11 @@ export const CalendarModule: React.FC<CalendarModuleProps> = ({ onScheduleSucces
               </p>
               <div className="flex items-center justify-center gap-3">
                 <button
-                  onClick={handleSeedEvents}
+                  onClick={handleLiveSync}
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-300 border border-teal-500/30 text-xs font-bold flex items-center gap-1.5"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                  Load Demo Appointments
+                  <RefreshCw className="w-3.5 h-3.5 text-teal-400" />
+                  Sync from Google
                 </button>
                 <button
                   onClick={() => setIsNewEventModalOpen(true)}

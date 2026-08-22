@@ -109,12 +109,17 @@ export interface WhatsAppTemplate {
 }
 
 export interface WhatsAppCoexistenceConfig {
-  wabaId: string;
-  appId: string;
+  businessPortfolioId?: string; // e.g. 648719564147989 (Meta Business Portfolio / Business Manager ID)
+  businessPortfolioName?: string; // e.g. SOLAR GEAR Limited
+  wabaId: string; // e.g. 1495781001950663 (WhatsApp Business Account ID for APIs & messaging)
+  wabaName?: string; // e.g. Solar Gear
+  appId: string; // e.g. 946589648227889 (Meta App ID)
   appSecret: string;
   techProviderToken: string;
   phoneNumberId: string;
   displayPhoneNumber: string;
+  accountMode?: 'PLATFORM_CLOUD_API' | 'APP_MOBILE' | 'COEXISTENCE';
+  wabaReviewStatus?: 'APPROVED' | 'PENDING_REVIEW' | 'REVIEW_NOT_STARTED' | 'RESTRICTED';
   coexistenceStatus: 'CONNECTED' | 'PARTIAL_SYNC' | 'DISCONNECTED';
   syncMode: 'DUAL_COEXISTENCE' | 'API_PRIMARY' | 'APP_PRIMARY';
   deduplicationWindowSec: number;
@@ -123,6 +128,16 @@ export interface WhatsAppCoexistenceConfig {
   embeddedSignupCompleted: boolean;
   metaPartnerName: string;
   lastWebhookPing: string;
+  metaPermissions?: string[];
+  lastError?: {
+    code: string;
+    subcode?: string;
+    message: string;
+    timestamp: string;
+    resolved: boolean;
+    suggestion: string;
+    targetField?: 'businessPortfolioId' | 'wabaId' | 'appId' | 'phoneNumberId';
+  };
 }
 
 export interface Product {
@@ -468,11 +483,36 @@ export interface AiPlaygroundMessage {
   tokenEstimate?: number;
 }
 
+export interface AuthSession {
+  id: string;
+  userId: string;
+  userEmail: string;
+  ip: string;
+  userAgent: string;
+  deviceType: 'Desktop' | 'Mobile' | 'Tablet' | 'API Client';
+  browser: string;
+  location: string;
+  createdAt: string;
+  lastActive: string;
+  isCurrent?: boolean;
+}
+
+export interface TenantSecurityPolicy {
+  enforce2FA: boolean;
+  ipAllowlist: string[];
+  sessionTimeoutMinutes: number;
+  passwordExpirationDays: number;
+  dataSovereigntyRegion: 'US-EAST' | 'EU-WEST' | 'APAC-SOUTH' | 'GLOBAL';
+  maxConcurrentSessions: number;
+}
+
 export interface TenantAccount {
   id: string;
   name: string;
+  slug: string;
   email: string;
   company: string;
+  industry?: string;
   role: string;
   status: TenantStatus;
   plan: 'Free Trial' | 'Growth SaaS' | 'Enterprise Ultra' | 'Custom VIP';
@@ -481,5 +521,7 @@ export interface TenantAccount {
   maxAgents: number;
   monthlyMessageQuota: number;
   notes?: string;
+  securityPolicy?: TenantSecurityPolicy;
+  activeUsersCount?: number;
 }
 

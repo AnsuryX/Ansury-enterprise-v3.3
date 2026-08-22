@@ -219,12 +219,17 @@ export const initialBrandConfig: EnterpriseBrandConfig = {
 };
 
 export const initialCoexistenceConfig: WhatsAppCoexistenceConfig = {
+  businessPortfolioId: '',
+  businessPortfolioName: '',
   appId: '',
   appSecret: '',
   techProviderToken: '',
   phoneNumberId: '',
   wabaId: '',
+  wabaName: '',
   displayPhoneNumber: '',
+  accountMode: 'COEXISTENCE',
+  wabaReviewStatus: 'APPROVED',
   coexistenceStatus: 'DISCONNECTED',
   syncMode: 'DUAL_COEXISTENCE',
   deduplicationWindowSec: 300,
@@ -233,6 +238,7 @@ export const initialCoexistenceConfig: WhatsAppCoexistenceConfig = {
   embeddedSignupCompleted: false,
   metaPartnerName: 'Ansury Enterprise Cloud',
   lastWebhookPing: 'Not connected',
+  metaPermissions: ['whatsapp_business_management', 'whatsapp_business_messaging'],
 };
 
 export const initialInboxes: Inbox[] = [
@@ -296,6 +302,7 @@ export const initialTenants: TenantAccount[] = [
   {
     id: 'tenant_main',
     name: 'Admin User',
+    slug: 'ansury-enterprise-hq',
     email: 'admin@ansury.com',
     company: 'Ansury Enterprise HQ',
     role: 'Super Admin',

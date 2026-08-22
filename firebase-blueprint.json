@@ -1,0 +1,167 @@
+{
+  "entities": {
+    "Contact": {
+      "title": "Contact",
+      "description": "Customer or lead profile in the omnichannel platform",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "tenantId": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 200 },
+        "phone": { "type": "string", "maxLength": 50 },
+        "email": { "type": "string", "maxLength": 200 },
+        "company": { "type": "string", "maxLength": 200 },
+        "jobTitle": { "type": "string", "maxLength": 200 },
+        "location": { "type": "string", "maxLength": 200 },
+        "preferredChannel": { "type": "string", "enum": ["whatsapp", "instagram", "messenger", "livechat", "email", "sms"] },
+        "lifecycleStage": { "type": "string", "enum": ["lead", "prospect", "customer", "vip", "churned"] },
+        "leadScore": { "type": "number" },
+        "assignedAgent": { "type": "string", "maxLength": 128 },
+        "avatar": { "type": "string", "maxLength": 1000 },
+        "notes": { "type": "string", "maxLength": 5000 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "phone"]
+    },
+    "Conversation": {
+      "title": "Conversation",
+      "description": "Omnichannel messaging thread",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "tenantId": { "type": "string", "maxLength": 128 },
+        "contactId": { "type": "string", "maxLength": 128 },
+        "channel": { "type": "string", "enum": ["whatsapp", "instagram", "messenger", "livechat", "email", "sms"] },
+        "status": { "type": "string", "enum": ["open", "pending", "resolved", "snoozed", "closed"] },
+        "priority": { "type": "string", "enum": ["low", "medium", "high", "urgent"] },
+        "unreadCount": { "type": "number" },
+        "assignedAgent": { "type": "string", "maxLength": 128 },
+        "lastMessage": { "type": "string", "maxLength": 5000 },
+        "lastMessageTimestamp": { "type": "string", "maxLength": 100 },
+        "coexistenceSynced": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "channel", "status"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Individual message within a conversation thread",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "tenantId": { "type": "string", "maxLength": 128 },
+        "conversationId": { "type": "string", "maxLength": 128 },
+        "senderType": { "type": "string", "enum": ["agent", "contact", "system", "bot", "copilot"] },
+        "senderName": { "type": "string", "maxLength": 200 },
+        "content": { "type": "string", "maxLength": 10000 },
+        "timestamp": { "type": "string", "maxLength": 100 },
+        "channel": { "type": "string", "enum": ["whatsapp", "instagram", "messenger", "livechat", "email", "sms"] },
+        "status": { "type": "string", "enum": ["sending", "sent", "delivered", "read", "failed"] },
+        "sourceApp": { "type": "string", "maxLength": 200 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "conversationId", "senderType", "content"]
+    },
+    "IntegrationConfig": {
+      "title": "IntegrationConfig",
+      "description": "Connected third-party connector configuration",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "tenantId": { "type": "string", "maxLength": 128 },
+        "type": { "type": "string", "maxLength": 100 },
+        "name": { "type": "string", "maxLength": 200 },
+        "status": { "type": "string", "enum": ["connected", "disconnected", "error", "pending"] },
+        "lastSync": { "type": "string", "maxLength": 100 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "type", "name", "status"]
+    },
+    "VisualFlow": {
+      "title": "VisualFlow",
+      "description": "Automation workflow definition",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "tenantId": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 200 },
+        "description": { "type": "string", "maxLength": 2000 },
+        "triggerType": { "type": "string", "maxLength": 100 },
+        "channel": { "type": "string", "maxLength": 100 },
+        "isActive": { "type": "boolean" },
+        "executionCount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "triggerType"]
+    },
+    "Tenant": {
+      "title": "Tenant",
+      "description": "Enterprise workspace account",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 200 },
+        "slug": { "type": "string", "maxLength": 200 },
+        "email": { "type": "string", "maxLength": 200 },
+        "company": { "type": "string", "maxLength": 200 },
+        "role": { "type": "string", "maxLength": 100 },
+        "plan": { "type": "string", "maxLength": 100 },
+        "status": { "type": "string", "enum": ["APPROVED", "PENDING", "SUSPENDED"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "email", "company", "status"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "System security and action audit record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "tenantId": { "type": "string", "maxLength": 128 },
+        "action": { "type": "string", "maxLength": 200 },
+        "actor": { "type": "string", "maxLength": 200 },
+        "ip": { "type": "string", "maxLength": 100 },
+        "timestamp": { "type": "string", "maxLength": 100 },
+        "details": { "type": "string", "maxLength": 2000 }
+      },
+      "required": ["id", "action", "actor", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/tenants/{tenantId}": {
+      "schema": "Tenant",
+      "description": "Enterprise multi-tenant workspace data"
+    },
+    "/contacts/{contactId}": {
+      "schema": "Contact",
+      "description": "Omnichannel CRM customer and lead records"
+    },
+    "/conversations/{conversationId}": {
+      "schema": "Conversation",
+      "description": "Omnichannel chat threads across WhatsApp, Instagram, and more"
+    },
+    "/conversations/{conversationId}/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Individual messages in conversation threads"
+    },
+    "/integrations/{integrationId}": {
+      "schema": "IntegrationConfig",
+      "description": "Third-party connector configurations and sync tokens"
+    },
+    "/flows/{flowId}": {
+      "schema": "VisualFlow",
+      "description": "Visual automation pathways and triggers"
+    },
+    "/auditLogs/{logId}": {
+      "schema": "AuditLog",
+      "description": "Security audit trails and compliance logs"
+    },
+    "/test/{docId}": {
+      "schema": "AuditLog",
+      "description": "Connection test collection"
+    }
+  }
+}
